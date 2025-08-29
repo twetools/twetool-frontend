@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "SQL Server Migration",
+      "type": "shell",
+      "command": "sqlcmd",
+      "args": [
+        "-S",
+        "localhost",
+        "-d",
+        "twetool",
+        "-i",
+        "migrate-mysql-to-sqlserver.sql"
+      ],
+      "group": "build",
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Dev Server",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Clean Empty Files",
+      "type": "shell",
+      "command": "node",
+      "args": ["scripts/maintenance/enhanced-empty-file-cleanup.js"],
+      "group": "build",
+      "isBackground": false,
+      "problemMatcher": [],
+      "detail": "Remove empty files that VS Code might create on restart"
+    }
+  ]
+}
