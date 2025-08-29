@@ -24,15 +24,33 @@ interface UserTableProps {
 
 export default function UserTable({ users: initialUsers }: UserTableProps) {
   const columns: DataTableColumn<User>[] = [
-    { key: "userID", label: "User ID", sortable: true },
+    {
+      key: "userID",
+      label: "User ID",
+      sortable: true,
+      headerAlign: "center",
+      align: "center",
+    },
     { key: "name", label: "Name", sortable: true },
     { key: "email", label: "Email", sortable: true },
-    { key: "phone", label: "Phone", sortable: true },
+    {
+      key: "phone",
+      label: "Phone",
+      sortable: true,
+      headerAlign: "center",
+      align: "center",
+    },
     { key: "addressLine1", label: "Address Line 1", sortable: true },
     { key: "addressLine2", label: "Address Line 2", sortable: true },
     { key: "city", label: "City", sortable: true },
     { key: "state", label: "State", sortable: true },
-    { key: "zipCode", label: "Zip Code", sortable: true },
+    {
+      key: "zipCode",
+      label: "Zip Code",
+      sortable: true,
+      headerAlign: "center",
+      align: "center",
+    },
   ];
 
   const [users, setUsers] = useState<User[]>(initialUsers);
