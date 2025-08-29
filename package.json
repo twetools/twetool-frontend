@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "db-updates": "cd ../twetool-backend && dotnet ef database update",
+    "db-update": "cd ../twetool-backend && dotnet ef database update",
     "start-backend": "npm run sync-backend-env && cd ../twetool-backend && dotnet watch run",
     "start-frontend": "cd ../twetool-frontend && next dev",
     "sync-backend-env": "node ../twetool-backend/scripts/sync-environment.js",
