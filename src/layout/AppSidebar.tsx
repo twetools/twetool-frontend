@@ -10,23 +10,24 @@ import type { NavItem, NavSection } from "@/types/nav";
 
 import {
   AnalyticsIcon,
+  AuthIcon,
   DashboardIcon,
   DocumentsIcon,
+  DropdownIcon,
   EnvelopeIcon,
-  FinancialIcon,
-  NetworkIcon,
-  PropertiesIcon,
   FeedbackIcon,
+  FinancialIcon,
+  FormElementsIcon,
+  HomeIcon,
+  HorizontalDotsIcon,
+  NetworkIcon,
+  PageIcon,
+  PropertiesIcon,
+  TableIcon,
   SupportIcon,
   TasksIcon,
   UsersIcon,
-  AuthIcon,
-  FormElementsIcon,
-  PageIcon,
-  TableIcon,
   UIElementsIcon,
-  DropdownIcon,
-  HorizontalDotsIcon,
 } from "@/icons";
 
 // Reusable badge components
@@ -51,13 +52,19 @@ const menuSection: NavSection = {
   title: "Menu",
   items: [
     {
+      name: "Home",
+      icon: <HomeIcon />,
+      path: "/",
+      devOnly: false,
+    },
+    {
       name: "Admin",
       icon: <DashboardIcon />,
       devOnly: false,
       subItems: [
         {
-          name: "Accounts",
-          path: "/accounts",
+          name: "Users",
+          path: "/users",
           devOnly: false,
           proOnly: false,
           newOnly: true,
