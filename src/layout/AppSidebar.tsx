@@ -675,12 +675,14 @@ const AppSidebar: React.FC = () => {
               <Link
                 href={nav.path}
                 className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                  isActive(nav.path, nav.name)
+                    ? "menu-item-active"
+                    : "menu-item-inactive"
                 }`}
               >
                 <span
                   className={`${
-                    isActive(nav.path)
+                    isActive(nav.path, nav.name)
                       ? "menu-item-icon-active"
                       : "menu-item-icon-inactive"
                   }`}
@@ -717,7 +719,7 @@ const AppSidebar: React.FC = () => {
                     <Link
                       href={subItem.path}
                       className={`menu-dropdown-item ${
-                        isActive(subItem.path)
+                        isActive(subItem.path, subItem.name)
                           ? "menu-dropdown-item-active"
                           : "menu-dropdown-item-inactive"
                       }`}
@@ -755,6 +757,8 @@ const AppSidebar: React.FC = () => {
     type: "main" | "examples" | "support" | "others";
     index: number;
   } | null>(null);
+  // Track if user manually toggled a submenu
+  const [manualSubmenu, setManualSubmenu] = useState<boolean>(false);
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
     {}
   );
@@ -763,51 +767,64 @@ const AppSidebar: React.FC = () => {
   // const isActive = (path: string) => path === pathname;
 
   const isActive = useCallback(
-    (path: string) => {
-      // Handle examples routes - they are under /examples/form-elements/...
-      if (path.startsWith("/") && pathname?.includes(path)) {
-        return (
-          pathname === `/examples/form-elements${path}` || pathname === path
-        );
+    (path: string, name?: string) => {
+      // Only highlight Home when at "/"
+      if (name === "Home" && pathname === "/") return true;
+      // Prevent other items with path "/" from being highlighted at home
+      if (path === "/" && name !== "Home" && pathname === "/") return false;
+      // Highlight only if pathname matches and not at root for non-Home
+      if (path && name !== "Home") {
+        return pathname === path && pathname !== "/";
       }
-      return pathname === path;
+      return false;
     },
     [pathname]
   );
 
   useEffect(() => {
-    // Check if the current path matches any submenu item
-    let submenuMatched = false;
-
-    // Check main menu items
-    menuSection.items.forEach((nav, index) => {
-      if (nav.subItems) {
-        nav.subItems.forEach((subItem) => {
-          if (isActive(subItem.path)) {
+    // Only auto-open submenu if not manually toggled
+    if (!manualSubmenu) {
+      let found = false;
+      // Check main menu items
+      menuSection.items.forEach((nav, index) => {
+        if (
+          nav.subItems &&
+          nav.subItems.some((subItem) => isActive(subItem.path, subItem.name))
+        ) {
+          if (
+            !openSubmenu ||
+            openSubmenu.type !== "main" ||
+            openSubmenu.index !== index
+          ) {
             setOpenSubmenu({ type: "main", index });
-            submenuMatched = true;
           }
-        });
-      }
-    });
-
-    // Check examples section items
-    examplesSection.items.forEach((nav, index) => {
-      if (nav.subItems) {
-        nav.subItems.forEach((subItem) => {
-          if (isActive(subItem.path)) {
+          found = true;
+        }
+      });
+      // Check examples section items
+      examplesSection.items.forEach((nav, index) => {
+        if (
+          nav.subItems &&
+          nav.subItems.some((subItem) => isActive(subItem.path, subItem.name))
+        ) {
+          if (
+            !openSubmenu ||
+            openSubmenu.type !== "examples" ||
+            openSubmenu.index !== index
+          ) {
             setOpenSubmenu({ type: "examples", index });
-            submenuMatched = true;
           }
-        });
+          found = true;
+        }
+      });
+      // Do not close submenu on navigation if it matches a subitem
+      // Only close if no match and openSubmenu is not null
+      if (!found && openSubmenu) {
+        setOpenSubmenu(null);
       }
-    });
-
-    // Only close submenu if no match and we're not on a submenu page
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
     }
-  }, [pathname, isActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, manualSubmenu]);
 
   useEffect(() => {
     // Set the height of the submenu items when the submenu is opened
@@ -826,6 +843,7 @@ const AppSidebar: React.FC = () => {
     index: number,
     menuType: "main" | "examples" | "support" | "others"
   ) => {
+    setManualSubmenu(true);
     setOpenSubmenu((prevOpenSubmenu) => {
       if (
         prevOpenSubmenu &&
@@ -837,6 +855,11 @@ const AppSidebar: React.FC = () => {
       return { type: menuType, index };
     });
   };
+
+  // Reset manualSubmenu when pathname changes (user navigates)
+  useEffect(() => {
+    setManualSubmenu(false);
+  }, [pathname]);
 
   return (
     <aside
