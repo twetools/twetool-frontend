@@ -69,20 +69,6 @@ const menuSection: NavSection = {
           proOnly: false,
           newOnly: true,
         },
-        {
-          name: "Comps",
-          path: "/",
-          devOnly: true,
-          proOnly: false,
-          newOnly: true,
-        },
-        {
-          name: "Tax Records",
-          path: "/",
-          devOnly: true,
-          proOnly: false,
-          newOnly: true,
-        },
       ],
     },
     {
@@ -717,7 +703,7 @@ const AppSidebar: React.FC = () => {
                     <Link
                       href={subItem.path}
                       className={`menu-dropdown-item ${
-                        isActive(subItem.path)
+                        pathname === subItem.path
                           ? "menu-dropdown-item-active"
                           : "menu-dropdown-item-inactive"
                       }`}
@@ -764,11 +750,13 @@ const AppSidebar: React.FC = () => {
 
   const isActive = useCallback(
     (path: string) => {
-      // Handle examples routes - they are under /examples/form-elements/...
-      if (path.startsWith("/") && pathname?.includes(path)) {
-        return (
-          pathname === `/examples/form-elements${path}` || pathname === path
-        );
+      // Special case for Home: only match exactly '/'
+      if (path === "/") {
+        return pathname === "/";
+      }
+      // For all other paths, match exactly or as a prefix (but not '/')
+      if (path && path !== "/" && pathname?.startsWith(path)) {
+        return pathname === path;
       }
       return pathname === path;
     },
@@ -776,7 +764,12 @@ const AppSidebar: React.FC = () => {
   );
 
   useEffect(() => {
-    // Check if the current path matches any submenu item
+    // Only open submenus if not on Home page
+    if (pathname === "/") {
+      setOpenSubmenu(null);
+      return;
+    }
+
     let submenuMatched = false;
 
     // Check main menu items
